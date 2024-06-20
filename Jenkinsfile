@@ -20,11 +20,16 @@ pipeline {
         stage('Build and Deploy') {
             steps {
                 script {
-                    // Xây dựng và triển khai bằng Docker Compose
-                    bat 'docker-compose down'
+                    // Remove any existing containers with the same name
+                    bat 'docker rm -f myapp-nginx || true'
+                    bat 'docker rm -f myapp-database || true'
+                    bat 'docker rm -f myapp-phpmyadmin || true'
+                    bat 'docker rm -f myapp-wordpress || true'
 
-                    // Chỉ khởi động lại dịch vụ WordPress
-                    bat 'docker-compose up --build'
+                    // Dừng và loại bỏ các container cũ
+                    bat 'docker-compose down --remove-orphans'
+                    // Xây dựng và triển khai bằng Docker Compose
+                    bat 'docker-compose up --build -d'
                 }
             }
         }
